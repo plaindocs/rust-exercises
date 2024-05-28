@@ -34,15 +34,13 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
         tokio::select! {
             Ok(Some(line)) = lines.next_line() => {
                 let (dest, msg) = match line.split_once(':') {
-
                     None => continue,
-                    Some((dest, msg)) => (dest, msg.trim()),
+                    Some((dest, msg)) => (dest, msg.trim().to_string()),
                 };
                 let dest: Vec<String> = dest
                     .split(',')
                     .map(|name| name.trim().to_string())
                     .collect();
-                let msg: String = msg.trim().to_string();
         
                 broker
                     .send(Event::Message {
