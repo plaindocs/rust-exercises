@@ -195,8 +195,6 @@ async fn broker_loop(mut events: Receiver<Event>) {
             },
         }
     }
-
-    drop(peers) //4
 }
 ```
 
@@ -206,8 +204,6 @@ Notice what happens with all of the channels once we exit the accept loop:
 1. We notify all readers to stop accepting messages.
 2. We drop the main broker's sender.
    That way when the readers are done, there's no sender for the broker's channel, and the channel closes.
-3. Next, the broker exits `while let Some(event) = events.next().await` loop.
-3. It's crucial that, at this stage, we drop the `peers` map.
-   This drops writer's senders.
-4. Tokio will automatically wait for all finishing futures
+3. In result `events.recv().await` returns `None`, which breaks the `broker_loop`.
+4. Tokio will automatically wait for all finishing futures.
 5. Finally, we join the broker, which also guarantees that all the writes have terminated.

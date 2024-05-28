@@ -165,3 +165,6 @@ async fn broker_loop(mut events: Receiver<Event>) {
     while let Some((_name, _pending_messages)) = disconnect_receiver.recv().await {}
 }
 ```
+
+4. It's crucial that, at this stage, we drop the `peers` map.
+   This drops writer's senders.
